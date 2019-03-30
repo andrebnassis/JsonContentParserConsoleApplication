@@ -17,8 +17,13 @@ namespace ConsoleApplication1.Services
             try
             {
                 // If there's a propertyName, attempts to parse the value as JSON and retrieve the value from it.
-                var json = MapJsonProperty(variableValue, property);
-                return JsonConvert.SerializeObject(json);
+                var result = MapJsonProperty(variableValue, property);
+                var resultString = JsonConvert.SerializeObject(result);
+
+                resultString = resultString.StartsWith("\"") ? resultString.Substring(1) : resultString;
+                resultString = resultString.EndsWith("\"") ? resultString.Substring(0, resultString.Length-1) : resultString;
+
+                return resultString;
 
             }
             catch (JsonException)
