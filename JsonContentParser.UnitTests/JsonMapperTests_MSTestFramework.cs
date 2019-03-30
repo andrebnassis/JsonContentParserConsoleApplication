@@ -52,9 +52,21 @@ namespace JsonContentParser.UnitTests
         //   ]
         //}
         public Example1 exampleObj = new Example1(1, 1.0, new List<string> { "a", "b" }, new List<int> { 27, 1, 2, 3, 4, 5, 6, 50, 7, 8 }, new List<double> { 1.1, 1.2 }, new Dictionary<string, string> { { "asd", "123" }, { "def", "456" } }, new List<Example2> { new Example2(7, new Dictionary<string, string> { { "fgh", "789" } }, new Dictionary<int, string> { { 3, "dasdas" } }) });
+
         [DataTestMethod]
+        [DataRow("id.Value()", "1")]
+        [DataRow("stringlist[0]", "a")]
+        [DataRow("stringlist.First()", "a")]
+        [DataRow("stringlist.First().Value()", "a")]
+        [DataRow("dict.First().Key()", "asd")]
+        [DataRow("dict.First().Value()++", "124")]
+        [DataRow("dict.Last().Value()++", "457")]
+        [DataRow("dict.Count()", "2")]
+        [DataRow("intlist.Value()", "[27,1,2,3,4,5,6,50,7,8]")]
+        [DataRow("intlist[0].Value()--", "26")]
+        [DataRow("example2[0].dict[\"fgh\"].Value()", "789")]
+        [DataRow("example2[0].dict[\"fgh\"].Value()--", "788")]
         [DataRow("example2[0].dictint.elementAt(0).Value()", "dasdas")]
-        [DataRow("stringlist[0]","a")]
         public void MSTestFramework_WhenPassSomePath_ShouldReturnItsCorrespondantValue(string path, string expectedResult)
         {
             //Arrange
@@ -68,5 +80,9 @@ namespace JsonContentParser.UnitTests
             Assert.AreEqual(expectedResult, result);
 
         }
+
+        //TODO: unit test to test Random feature
+        //[TestCase("dict.Random()", "")]
+        // [TestCase("dict.Random().Key()", "")]
     }
 }

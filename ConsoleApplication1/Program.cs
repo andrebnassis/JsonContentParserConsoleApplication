@@ -29,31 +29,10 @@ namespace JsonContentParser
             var json = JsonConvert.SerializeObject(example);
             
 
-            //var path1 = "example2[0].dict[\"fgh\"].Value()";
-            //var testeSetVariable = SetJsonProperty(json, path1, "Teste");
-          
-            //var path3 = "example2[0].dict[\"fgh\"].Value()--";
-            //var path4 = "dict.First().Value()++";
-            //var path5 = "dict.Last().Value()++";
-            //var path8 = "dict.Count()";
-            //var path9 = "dict.Random()";
-            //var path10 = "stringlist.First().Value()";
-            //var path11 = "id.Value()";
-            //var path12 = "intlist.Value()";
-            //var path13 = "dict.First().Key()";
-            //var path14 = "dict.Random().Key()";
-            //var path15 = "stringlist.First()";
-            //var path16 = "id.Value()";
-            //var path17 = "intlist[0].Value()--";
-            var path18 = "example2[0].dictint.elementAt(0).Value()";
 
+            var path = "example2[0].dictint.elementAt(0).Value()";
             var result = JsonMapperService.GetJsonProperty(json, path18);
 
-            //var result1 = GetJsonProperty(json, path5);
-            //var result2 = GetJsonProperty(json, path6);
-            //var result3 = GetJsonProperty(json, path7);
-            //var result4 = GetJsonProperty(json, path8);
-            //var result5 = GetJsonProperty(json, path9);
         }
 
         
