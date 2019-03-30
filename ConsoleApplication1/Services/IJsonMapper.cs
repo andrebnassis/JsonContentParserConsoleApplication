@@ -2,7 +2,7 @@
 {
     public interface IJsonMapper
     {
-        object GetJsonProperty(string variableValue, string property);
-        object SetJsonProperty(string variableValue, string property, string newValue);
+        string GetJsonProperty(string variableValue, string property);
+        string SetJsonProperty(string variableValue, string property, string newValue);
     }
 }

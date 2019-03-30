@@ -83,7 +83,25 @@ namespace JsonContentParser.UnitTests
 
             //Assert
             Assert.AreEqual(expectedResult, result);
+            
 
+        }
+
+        [TestCase("example2[0].dict[\"fgh\"].Value()", "Teste")]
+        public void NUnitTestFramework_WhenSendSomePathAndValue_ShouldOverwriteItsValue(string path, string value)
+        {
+             //Arrange
+            var JsonMapperService = new JsonMapper();
+            var json = JsonConvert.SerializeObject(exampleObj);
+
+            //Act
+            var newJson = JsonMapperService.SetJsonProperty(json, path, value);
+
+            var result = JsonMapperService.GetJsonProperty(newJson, path);
+
+            //Assert
+            Assert.AreEqual(value, result);
+           
         }
 
         //TODO: unit test to test Random feature

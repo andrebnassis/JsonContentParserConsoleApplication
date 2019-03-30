@@ -12,7 +12,7 @@ namespace ConsoleApplication1.Services
         public const string ArrayPattern = @"(.*)\[(.*)\]";
         public const string FunctionPattern = @"(.*\()(.*)(\))";
 
-        public  object GetJsonProperty(string variableValue, string property)
+        public string GetJsonProperty(string variableValue, string property)
         {
             try
             {
@@ -32,13 +32,13 @@ namespace ConsoleApplication1.Services
             }
         }
 
-        public  object SetJsonProperty(string variableValue, string property, string newValue)
+        public string SetJsonProperty(string variableValue, string property, string newValue)
         {
             var path = GetJsonPath(variableValue, property);
             JToken obj = JObject.Parse(variableValue);
             JToken token = obj.SelectToken(path);
             token.Replace(newValue);
-            return obj;
+            return JsonConvert.SerializeObject(obj);
 
         }
 
