@@ -1,17 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using ConsoleApplication1.Models;
+﻿using ConsoleApplication1.Models;
 using ConsoleApplication1.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JsonContentParser.UnitTests
 {
+    //Pre-requisites
+    // install-package NUnit -Version 3.8.1
+    // install-package NUnit3TestAdapter -Version 3.8.0
 
-
-    [TestClass]
-    public class JsonMapperTests
+    [TestFixture]
+    public class JsonMapperTests_NUnitTestFramework
     {
+
         //{  
         //   "id":1,
         //   "num":1.0,
@@ -52,10 +58,10 @@ namespace JsonContentParser.UnitTests
         //   ]
         //}
         public Example1 exampleObj = new Example1(1, 1.0, new List<string> { "a", "b" }, new List<int> { 27, 1, 2, 3, 4, 5, 6, 50, 7, 8 }, new List<double> { 1.1, 1.2 }, new Dictionary<string, string> { { "asd", "123" }, { "def", "456" } }, new List<Example2> { new Example2(7, new Dictionary<string, string> { { "fgh", "789" } }, new Dictionary<int, string> { { 3, "dasdas" } }) });
-        [DataTestMethod]
-        [DataRow("example2[0].dictint.elementAt(0).Value()", "dasdas")]
-        [DataRow("stringlist[0]","a")]
-        public void WhenPassSomePath_ShouldReturnItsCorrespondantValue(string path, string expectedResult)
+
+        [TestCase("example2[0].dictint.elementAt(0).Value()", "dasdas")]
+        [TestCase("stringlist[0]", "a")]
+        public void NUnitTestFramework_WhenPassSomePath_ShouldReturnItsCorrespondantValue(string path, string expectedResult)
         {
             //Arrange
             var JsonMapperService = new JsonMapper();
