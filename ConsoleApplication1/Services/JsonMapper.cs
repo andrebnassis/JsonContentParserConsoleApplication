@@ -21,7 +21,7 @@ namespace ConsoleApplication1.Services
                 var resultString = JsonConvert.SerializeObject(result);
 
                 resultString = resultString.StartsWith("\"") ? resultString.Substring(1) : resultString;
-                resultString = resultString.EndsWith("\"") ? resultString.Substring(0, resultString.Length-1) : resultString;
+                resultString = resultString.EndsWith("\"") ? resultString.Substring(0, resultString.Length - 1) : resultString;
 
                 return resultString;
 
@@ -35,14 +35,24 @@ namespace ConsoleApplication1.Services
         public string SetJsonProperty(string variableValue, string property, string newValue)
         {
             var path = GetJsonPath(variableValue, property);
-            JToken obj = JObject.Parse(variableValue);
-            JToken token = obj.SelectToken(path);
-            token.Replace(newValue);
+            var obj = JObject.Parse(variableValue);
+            if (!string.IsNullOrEmpty(path))
+            {
+                
+                JToken token = obj.SelectToken(path);
+                token.Replace(newValue);
+                
+            }
+            else
+            {
+                //Se não existe, cria o caminho.
+                //Precisa melhorar, pois não está criando o caminho de acordo com o objeto passado, caso seja um objeto complexo. Ex: friendInfo.Name ou mais complexos.
+                obj.Add(property,newValue);
+            }
             return JsonConvert.SerializeObject(obj);
-
         }
 
-        private  JToken MapJsonProperty(string variableValue, string property)
+        private JToken MapJsonProperty(string variableValue, string property)
         {
             JToken json = null;
             try
@@ -118,25 +128,26 @@ namespace ConsoleApplication1.Services
 
         }
 
-        private  string GetJsonPath(string variableValue, string property)
+        private string GetJsonPath(string variableValue, string property)
         {
             try
             {
                 var json = MapJsonProperty(variableValue, property);
                 return json.Path;
             }
-            catch (JsonException)
+            catch (Exception)
             {
                 return null;
             }
+
         }
 
-        private  bool IsAFunction(string input)
+        private bool IsAFunction(string input)
         {
             return Regex.IsMatch(input, FunctionPattern);
         }
 
-        private  JToken ProcessFunctionJson(JToken json, string function)
+        private JToken ProcessFunctionJson(JToken json, string function)
         {
             var matches = Regex.Matches(function, FunctionPattern);
             var parameter = ((matches[0]).Groups[2]).Value;
