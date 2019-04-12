@@ -88,7 +88,8 @@ namespace JsonContentParser.UnitTests
         }
 
         [TestCase("example2[0].dict[\"fgh\"].Value()", "Teste")]
-        [TestCase("friendInfo.Name", "Teste")]
+        [TestCase("example2[0].Name", "Teste")]
+        [TestCase("example2", "Teste")]
         public void NUnitTestFramework_WhenSendSomePathAndValue_ShouldOverwriteItsValue(string path, string value)
         {
              //Arrange
@@ -97,6 +98,7 @@ namespace JsonContentParser.UnitTests
 
             //Act
             var newJson = JsonMapperService.SetJsonProperty(json, path, value);
+
 
             var result = JsonMapperService.GetJsonProperty(newJson, path);
 

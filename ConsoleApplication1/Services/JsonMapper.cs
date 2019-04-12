@@ -38,18 +38,64 @@ namespace ConsoleApplication1.Services
             var obj = JObject.Parse(variableValue);
             if (!string.IsNullOrEmpty(path))
             {
-                
+
                 JToken token = obj.SelectToken(path);
                 token.Replace(newValue);
-                
+
             }
             else
             {
+                if (CanSetVariableContent(variableValue, property, property.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries).First()))
+                {
+                    var pathItems = property.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                    if (pathItems.Count() == 1)
+                    {
+                        return newValue;
+                    }
+                    else
+                    {
+                        if(new Regex(ArrayPattern).IsMatch(pathItems[pathItems.Count() - 2]))
+                        {
+                            
+                            property = property.Substring(0, property.LastIndexOf(pathItems[pathItems.Count() - 2]) + pathItems[pathItems.Count() - 2].Count());
+                            SetJsonProperty(variableValue, property, newValue);
+                        }
+                        else
+                        {
+                            obj.Add(pathItems.LastOrDefault(), newValue);
+                        }
+                    }
+                }
+
                 //Se não existe, cria o caminho.
                 //Precisa melhorar, pois não está criando o caminho de acordo com o objeto passado, caso seja um objeto complexo. Ex: friendInfo.Name ou mais complexos.
-                obj.Add(property,newValue);
+
             }
             return JsonConvert.SerializeObject(obj);
+        }
+
+        private bool CanSetVariableContent(string variableValue, string entirePath, string currentPath)
+        {
+            var pathLeft = entirePath.Substring(currentPath.Length).Trim();
+            if (pathLeft.StartsWith("."))
+            {
+                pathLeft = pathLeft.Substring(1);
+            }
+
+            if (string.IsNullOrEmpty(pathLeft))
+            {
+                return true;
+            }
+            
+            var path = GetJsonPath(variableValue, currentPath);
+            var obj = JObject.Parse(variableValue);
+            //Uncomment and use this line! //(obj.Property("example2").Values().ElementAt(0) as JObject).Add("Name", "Teste"); //Add when property does not exist! Think about the algorithm ñow.
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+            currentPath += $".{pathLeft.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries).First()}";
+            return CanSetVariableContent(variableValue, entirePath, currentPath);
         }
 
         private JToken MapJsonProperty(string variableValue, string property)
