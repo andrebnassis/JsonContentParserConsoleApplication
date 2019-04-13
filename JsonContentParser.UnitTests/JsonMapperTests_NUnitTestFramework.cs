@@ -90,6 +90,10 @@ namespace JsonContentParser.UnitTests
         [TestCase("example2[0].dict[\"fgh\"].Value()", "Teste")]
         [TestCase("example2[0].Name", "Teste")]
         [TestCase("example2", "Teste")]
+        [TestCase("example2[0].dictint[\"3\"]", "Teste")]
+        [TestCase("example2[0].dictint.First().Value()", "Teste")]
+        [TestCase("example2[0].dictint.elementAt(0).Value()", "Teste")]
+        [TestCase("example2[0].dictint", "Teste")]
         public void NUnitTestFramework_WhenSendSomePathAndValue_ShouldOverwriteItsValue(string path, string value)
         {
              //Arrange

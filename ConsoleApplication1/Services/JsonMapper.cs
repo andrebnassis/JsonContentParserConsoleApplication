@@ -9,7 +9,7 @@ namespace ConsoleApplication1.Services
     public class JsonMapper : IJsonMapper
     {
         public const string OperationPattern = @"(.+)(\-\-|\+\+)$";
-        public const string ArrayPattern = @"(.*)\[(.*)\]";
+        public const string ArrayPattern = "(?<name>(.*)?)\\[(?<index>(.*)?)\\]";
         public const string FunctionPattern = @"(.*\()(.*)(\))";
 
         public string GetJsonProperty(string variableValue, string property)
@@ -54,11 +54,11 @@ namespace ConsoleApplication1.Services
                     }
                     else
                     {
-                        if(new Regex(ArrayPattern).IsMatch(pathItems[pathItems.Count() - 2]))
+                        if (Regex.IsMatch(pathItems[pathItems.Count() - 2], ArrayPattern))
                         {
-                            
-                            property = property.Substring(0, property.LastIndexOf(pathItems[pathItems.Count() - 2]) + pathItems[pathItems.Count() - 2].Count());
-                            SetJsonProperty(variableValue, property, newValue);
+                            var match = Regex.Match(pathItems[pathItems.Count() - 2], ArrayPattern);
+                            (obj.Property(match.Groups["name"].Value).Values().ElementAt(int.Parse(match.Groups["index"].Value)) as JObject).Add(pathItems[pathItems.Count() - 1], newValue); //Add when property does not exist! Think about the algorithm ñow.
+
                         }
                         else
                         {
@@ -76,20 +76,23 @@ namespace ConsoleApplication1.Services
 
         private bool CanSetVariableContent(string variableValue, string entirePath, string currentPath)
         {
+            var lastpath = entirePath.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+
             var pathLeft = entirePath.Substring(currentPath.Length).Trim();
             if (pathLeft.StartsWith("."))
             {
                 pathLeft = pathLeft.Substring(1);
             }
 
-            if (string.IsNullOrEmpty(pathLeft))
+
+            if (string.IsNullOrEmpty(pathLeft) && !Regex.IsMatch(lastpath, ArrayPattern))
             {
                 return true;
             }
-            
+
             var path = GetJsonPath(variableValue, currentPath);
             var obj = JObject.Parse(variableValue);
-            //Uncomment and use this line! //(obj.Property("example2").Values().ElementAt(0) as JObject).Add("Name", "Teste"); //Add when property does not exist! Think about the algorithm ñow.
+
             if (string.IsNullOrEmpty(path))
             {
                 return false;
@@ -241,7 +244,7 @@ namespace ConsoleApplication1.Services
                     case "random()":
                         return json.ElementAt(new Random().Next(0, json.Count()));
                     default:
-                        return json;
+                        throw new Exception($"function {function} not recognized");
                 }
             }
             catch (Exception e)
