@@ -8,9 +8,9 @@ namespace ConsoleApplication1.Services
 {
     public class JsonMapper : IJsonMapper
     {
-        public const string OperationPattern = @"(.+)(\-\-|\+\+)$";
+        public const string OperationPattern = "(?<name>.+)(?<operation>\\-\\-|\\+\\+)$";
         public const string ArrayPattern = "(?<name>(.*)?)\\[(?<index>(.*)?)\\]";
-        public const string FunctionPattern = @"(.*\()(.*)(\))";
+        public const string FunctionPattern = "(?<name>.*)(?<open>\\()(?<parameter>.*)(?<close>\\))";
 
         public string GetJsonProperty(string variableValue, string property)
         {
@@ -113,15 +113,16 @@ namespace ConsoleApplication1.Services
                 json = JObject.Parse(variableValue);
 
 
-                var operation = "";
-                foreach (var s in propertyNames)
+                foreach (var item in propertyNames)
                 {
-
-                    var matches = Regex.Matches(s, OperationPattern);
-                    operation = matches.Count > 0 ? operation = ((matches[0]).Groups[2]).Value : "";
-
-                    var input = string.IsNullOrEmpty(operation) ? s.Trim() : s.Replace(operation, "").Trim();
-
+                    var operation = "";
+                    var input = item;
+                    if (Regex.IsMatch(item, OperationPattern))
+                    {
+                        var match = Regex.Match(item, OperationPattern);
+                        operation = match.Groups["operation"].Value;
+                        input = match.Groups["name"].Value;
+                    }
 
                     if (IsAnArray(input))
                     {
@@ -198,9 +199,9 @@ namespace ConsoleApplication1.Services
 
         private JToken ProcessFunctionJson(JToken json, string function)
         {
-            var matches = Regex.Matches(function, FunctionPattern);
-            var parameter = ((matches[0]).Groups[2]).Value;
-            function = Regex.Replace(function, FunctionPattern, "$1$3");
+            var match = Regex.Match(function, FunctionPattern);
+            var parameter = (match.Groups["parameter"]).Value;
+            function = $"{match.Groups["name"].Value}{match.Groups["open"].Value}{match.Groups["close"].Value}";
 
 
 
@@ -260,16 +261,17 @@ namespace ConsoleApplication1.Services
 
         private JToken ProcessArrayJson(JToken json, string propertyName)
         {
-            var matches = Regex.Matches(propertyName, ArrayPattern);
-            json = json[matches[0].Groups[1].Value];
-            if (!matches[0].Groups[2].Value.Contains("\""))
+            var match = Regex.Match(propertyName, ArrayPattern);
+            json = json[match.Groups["name"].Value];
+            var index = match.Groups["index"].Value;
+            if (!index.Contains("\""))
             {
-                json = json[int.Parse(matches[0].Groups[2].Value)];
+                json = json[int.Parse(index)];
 
             }
             else
             {
-                json = json[matches[0].Groups[2].Value.Replace("\"", "")];
+                json = json[index.Replace("\"", "")];
             }
 
 
